@@ -29,10 +29,10 @@
 #
 #++
 
-require 'rbconfig'
-require 'find'
-require 'fileutils'
-require 'tempfile'
+require 'rbconfig'  #ruby解释器读取的设置？
+require 'find' #文件目录查找工具
+require 'fileutils' #文件操作工具
+require 'tempfile' #临时文件工具
 begin
   require 'ftools' # apparently on some system ftools doesn't get loaded
   $haveftools = true
@@ -51,16 +51,16 @@ rescue LoadError
   $haverdoc = false
 end
 
-PREREQS = %w{openssl facter cgi hiera}
-MIN_FACTER_VERSION = 1.5
+PREREQS = %w{openssl facter cgi hiera}  #不含空格的字符串数组
+MIN_FACTER_VERSION = 1.5   #要求的facter最小版本
 
-InstallOptions = OpenStruct.new
+InstallOptions = OpenStruct.new    #新的结构体，可以给任意值
 
 def glob(list)
-  g = list.map { |i| Dir.glob(i) }
-  g.flatten!
-  g.compact!
-  g
+  g = list.map { |i| Dir.glob(i) } #将list中的多个路径下的符合规则的文件赋值给g,g也是list，结果是多个文件列表
+  g.flatten!  #将多维数组转换成一维数组
+  g.compact!  #删除空元素
+  g # return g
 end
 
 def do_configs(configs, target, strip = 'conf/')
@@ -173,7 +173,7 @@ def prepare_installation
   # Only try to do docs if we're sure they have rdoc
   if $haverdoc
     InstallOptions.rdoc  = true
-    InstallOptions.ri  = $operatingsystem != "windows"
+    InstallOptions.ri  = $operatingsystem != "windows"  #ri的值为true or false 非windows才能rdoc？
   else
     InstallOptions.rdoc  = false
     InstallOptions.ri  = false
@@ -408,16 +408,16 @@ EOS
 end
 
 # Change directory into the puppet root so we don't get the wrong files for install.
-FileUtils.cd File.dirname(__FILE__) do
+FileUtils.cd File.dirname(__FILE__) do   #进入到install.rb所在的目录
   # Set these values to what you want installed.
   configs = glob(%w{conf/auth.conf})
   bins  = glob(%w{bin/*})
-  rdoc  = glob(%w{bin/* lib/**/*.rb README* }).reject { |e| e=~ /\.(bat|cmd)$/ }
+  rdoc  = glob(%w{bin/* lib/**/*.rb README* }).reject { |e| e=~ /\.(bat|cmd)$/ } #正则匹配拓展名结尾的
   ri    = glob(%w{bin/*.rb lib/**/*.rb}).reject { |e| e=~ /\.(bat|cmd)$/ }
   man   = glob(%w{man/man[0-9]/*})
   libs  = glob(%w{lib/**/*})
 
-  check_prereqs
+  check_prereqs   #检查依赖的openssl facter cgi hiera是否安装。
   prepare_installation
 
   #build_rdoc(rdoc) if InstallOptions.rdoc

@@ -40,7 +40,7 @@ rescue LoadError
   puts "ftools not found.  Using FileUtils instead.."
   $haveftools = false
 end
-require 'optparse'
+require 'optparse'   #命令行操作解析
 require 'ostruct'
 
 begin

@@ -1,4 +1,13 @@
+module GetClassInfo
+  def getAllInfo
+    puts "Class is :#{self.class}"
+    puts "Methods is :#{self.methods}"
+    puts "Object_id is :#{self.object_id}"
+  end
+  module_function :getAllInfo
+end
 class HelloWorld
+  include GetClassInfo
   Chart = "bazenga!"
   def getChart
     Chart
@@ -38,3 +47,12 @@ class MyHello < HelloWorld
     super(*a)
   end
 end
+
+module Body
+  Height=1.80
+  def getHeight
+    Height
+  end
+end
+
+

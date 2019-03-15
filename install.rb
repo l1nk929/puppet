@@ -149,7 +149,7 @@ def check_prereqs
       if pre == "facter"
         # to_f isn't quite exact for strings like "1.5.1" but is good
         # enough for this purpose.
-        facter_version = Facter.version.to_f
+        facter_version = Facter.version.to_f  #查看Facter版本转浮点数
         if facter_version < MIN_FACTER_VERSION
           puts "Facter version: #{facter_version}; minimum required: #{MIN_FACTER_VERSION}; cannot install"
           exit -1
@@ -243,7 +243,7 @@ def prepare_installation
   if RUBY_PLATFORM =~ /^universal-darwin[\d\.]+$/
     RbConfig::CONFIG['bindir'] = "/usr/bin"
   end
-
+  #设置安装路径
   if not InstallOptions.configdir.nil?
     configdir = InstallOptions.configdir
   elsif $operatingsystem == "windows"
@@ -418,7 +418,7 @@ FileUtils.cd File.dirname(__FILE__) do   #进入到install.rb所在的目录
   libs  = glob(%w{lib/**/*})
 
   check_prereqs   #检查依赖的openssl facter cgi hiera是否安装。
-  prepare_installation
+  prepare_installation  #读取命令行的安装参数，用到了optparse，待细看？
 
   #build_rdoc(rdoc) if InstallOptions.rdoc
   #build_ri(ri) if InstallOptions.ri

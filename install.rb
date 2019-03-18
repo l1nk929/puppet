@@ -41,10 +41,10 @@ rescue LoadError
   $haveftools = false
 end
 require 'optparse'   #命令行操作解析
-require 'ostruct'
+require 'ostruct'  #结构类，可构建带属性的实例
 
 begin
-  require 'rdoc/rdoc'
+  require 'rdoc/rdoc'  #产生帮助文档的类
   $haverdoc = true
 rescue LoadError
   puts "Missing rdoc; skipping documentation"
@@ -167,7 +167,7 @@ end
 #
 def prepare_installation
   $operatingsystem = Facter["operatingsystem"].value
-
+#InstallOptions 为 OSstruct结构，可赋值多个属性
   InstallOptions.configs = true
 
   # Only try to do docs if we're sure they have rdoc
@@ -180,23 +180,23 @@ def prepare_installation
   end
 
 
-  ARGV.options do |opts|
-    opts.banner = "Usage: #{File.basename($0)} [options]"
-    opts.separator ""
-    opts.on('--[no-]rdoc', 'Prevents the creation of RDoc output.', 'Default on.') do |onrdoc|
+  ARGV.options do |opts|        #读取安装参数
+    opts.banner = "Usage: #{File.basename($0)} [options]"     #File.basename($0)是当前执行文件，-h和--help会显示这个title
+    opts.separator ""  #相当于在帮助内容下加一个空行
+    opts.on('--[no-]rdoc', 'Prevents the creation of RDoc output.', 'Default on.') do |onrdoc|  #后两句都是说明，参数中有--no就是返回false
       InstallOptions.rdoc = onrdoc
     end
-    opts.on('--[no-]ri', 'Prevents the creation of RI output.', 'Default off on mswin32.') do |onri|
+    opts.on('--[no-]ri', 'Prevents the creation of RI output.', 'Default off on mswin32.') do |onri|  #如有多个option，只有--no是无效的
       InstallOptions.ri = onri
     end
-    opts.on('--[no-]tests', 'Prevents the execution of unit tests.', 'Default off.') do |ontest|
+    opts.on('--[no-]tests', 'Prevents the execution of unit tests.', 'Default off.') do |ontest|   #指定该选项的才会打印warn信息
       InstallOptions.tests = ontest
       warn "The tests flag is no longer functional in Puppet and is deprecated as of Dec 19, 2012. It will be removed in a future version of Puppet."
     end
     opts.on('--[no-]configs', 'Prevents the installation of config files', 'Default off.') do |ontest|
       InstallOptions.configs = ontest
     end
-    opts.on('--destdir[=OPTIONAL]', 'Installation prefix for all targets', 'Default essentially /') do |destdir|
+    opts.on('--destdir[=OPTIONAL]', 'Installation prefix for all targets', 'Default essentially /') do |destdir|  #格式必须为--destdir=/home/ap这样
       InstallOptions.destdir = destdir
     end
     opts.on('--configdir[=OPTIONAL]', 'Installation directory for config files', 'Default /etc/puppet') do |configdir|
@@ -230,7 +230,7 @@ def prepare_installation
       exit
     end
 
-    opts.parse!
+    opts.parse!  #必加，结束解析时加在代码末尾。
   end
 
   version = [RbConfig::CONFIG["MAJOR"], RbConfig::CONFIG["MINOR"]].join(".")
@@ -408,7 +408,7 @@ EOS
 end
 
 # Change directory into the puppet root so we don't get the wrong files for install.
-FileUtils.cd File.dirname(__FILE__) do   #进入到install.rb所在的目录
+FileUtils.cd File.dirname(__FILE__) do   #进入到install.rb所在的目录，获取安装源码下的一系列文件列表
   # Set these values to what you want installed.
   configs = glob(%w{conf/auth.conf})
   bins  = glob(%w{bin/*})
@@ -418,7 +418,7 @@ FileUtils.cd File.dirname(__FILE__) do   #进入到install.rb所在的目录
   libs  = glob(%w{lib/**/*})
 
   check_prereqs   #检查依赖的openssl facter cgi hiera是否安装。
-  prepare_installation  #读取命令行的安装参数，用到了optparse，待细看？
+  prepare_installation  #读取命令行的安装参数，用到了optparse，主要是创建目录
 
   #build_rdoc(rdoc) if InstallOptions.rdoc
   #build_ri(ri) if InstallOptions.ri

@@ -65,7 +65,7 @@ end
 
 def do_configs(configs, target, strip = 'conf/')
   Dir.mkdir(target) unless File.directory? target
-  configs.each do |cf|
+  configs.each do |cf|   #config文件其实是auth.conf
     ocf = File.join(InstallOptions.config_dir, cf.gsub(/#{strip}/, ''))
     if $haveftools
       File.install(cf, ocf, 0644, true)
@@ -369,7 +369,7 @@ def install_binfile(from, op_file, target)
     File.open(tmp_file.path, "w") do |op|
       op.puts "#!#{ruby}"
       contents = ip.readlines
-      contents.shift if contents[0] =~ /^#!/
+      contents.shift if contents[0] =~ /^#!/  #去掉第一行
       op.write contents.join
     end
   end
@@ -422,8 +422,8 @@ FileUtils.cd File.dirname(__FILE__) do   #进入到install.rb所在的目录，�
 
   #build_rdoc(rdoc) if InstallOptions.rdoc
   #build_ri(ri) if InstallOptions.ri
-  do_configs(configs, InstallOptions.config_dir) if InstallOptions.configs
-  do_bins(bins, InstallOptions.bin_dir)
-  do_libs(libs)
-  do_man(man) unless $operatingsystem == "windows"
+  do_configs(configs, InstallOptions.config_dir) if InstallOptions.configs  #安装auth.conf，如果是windows 安装一个eventlog的dll，并且写入注册表？
+  do_bins(bins, InstallOptions.bin_dir)  #安装ruby的bin文件
+  do_libs(libs)  #安装lib文件夹
+  do_man(man) unless $operatingsystem == "windows"  #非windows则执行
 end

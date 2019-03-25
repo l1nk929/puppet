@@ -24,15 +24,15 @@ module Puppet
     class CommandLine
       include Puppet::Util::Limits
 
-      OPTION_OR_MANIFEST_FILE = /^-|\.pp$|\.rb$/
+      OPTION_OR_MANIFEST_FILE = /^-|\.pp$|\.rb$/    #以-开头或者以pp或rb结尾
 
       # @param zero [String] the name of the executable
       # @param argv [Array<String>] the arguments passed on the command line
       # @param stdin [IO] (unused)
       def initialize(zero = $0, argv = ARGV, stdin = STDIN)
-        @command = File.basename(zero, '.rb')
-        @argv = argv
-        Puppet::Plugins.on_commandline_initialization(:command_line_object => self)
+        @command = File.basename(zero, '.rb')        #如果是执行puppet agent等等，去掉rb的拓展名 值为puppet
+        @argv = argv   #puppet后接的参数
+        Puppet::Plugins.on_commandline_initialization(:command_line_object => self)  #找不到这个方法？
       end
 
       # @return [String] name of the subcommand is being executed
@@ -55,7 +55,7 @@ module Puppet
         if subcommand_name.nil?
           @argv
         else
-          @argv[1..-1]
+          @argv[1..-1]   #返回除第一个之后后面的参数
         end
       end
 
@@ -83,8 +83,8 @@ module Puppet
       #
       # @return [void]
       def execute
-        Puppet::Util.exit_on_fail("initialize global default settings") do
-          Puppet.initialize_settings(args)
+        Puppet::Util.exit_on_fail("initialize global default settings") do    #加了获取异常的方法内执行代码块
+          Puppet.initialize_settings(args)   #初始化设置
         end
 
         setpriority(Puppet[:priority])

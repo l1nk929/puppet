@@ -9,7 +9,7 @@ if not defined? ::Bundler  #如果没有load Bundle的模块，就load rubygems
   end
 end
 
-require 'puppet'
+require 'puppet'   #包含了puppet模块，之后在puppet中的类方法类属性，都会附加在command line蕾上
 require 'puppet/util'
 require "puppet/util/plugins"
 require "puppet/util/rubygems"

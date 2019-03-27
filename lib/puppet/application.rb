@@ -6,18 +6,18 @@ require 'puppet/error'
 
 module Puppet
 
-# This class handles all the aspects of a Puppet application/executable
+# This class handles all the aspects of a Puppet application/executable  #这个类涉及到puppet执行程序的所有方面
 # * setting up options
-# * setting up logs
+# * setting up logs   
 # * choosing what to run
-# * representing execution status
+# * representing execution status   #设置配置，日志，执行的程序，执行状态
 #
 # === Usage
-# An application is a subclass of Puppet::Application.
+# An application is a subclass of Puppet::Application.   #一个可执行程序应该是这个的子类
 #
-# For legacy compatibility,
+# For legacy compatibility,    #继承的方法
 #      Puppet::Application[:example].run
-# is equivalent to
+# is equivalent to  #等价于
 #      Puppet::Application::Example.new.run
 #
 #
@@ -28,12 +28,12 @@ module Puppet
 #         @all = false
 #     end
 #
-#     # run_command is called to actually run the specified command
+#     # run_command is called to actually run the specified command   实际执行的代码
 #     def run_command
 #         send Puppet::Util::CommandLine.new.args.shift
 #     end
 #
-#     # option uses metaprogramming to create a method
+#     # option uses metaprogramming to create a method   元编程创建方法？
 #     # and also tells the option parser how to invoke that method
 #     option("--arg ARGUMENT") do |v|
 #         @args << v
@@ -74,10 +74,10 @@ module Puppet
 # arguments, including the long option, the short option, a description...
 # Refer to +OptionParser+ documentation for the exact format.
 # * If the option method is given a block, this one will be called whenever
-# the option is encountered in the command-line argument.
+# the option is encountered in the command-line argument.   如果option方法被给了一个命令所代表的代码块，他会在命令行里提到了就会执行
 # * If the option method has no block, a default functionnality will be used, that
 # stores the argument (or true/false if the option doesn't require an argument) in
-# the global (to the application) options array.
+# the global (to the application) options array.如果没有代码块，则会存储这个参数到全局数组里
 # * If a given option was not defined by a the +option+ method, but it exists as a Puppet settings:
 #  * if +unknown+ was used with a block, it will be called with the option name and argument
 #  * if +unknown+ wasn't used, then the option/argument is handed to Puppet.settings.handlearg for
@@ -87,7 +87,7 @@ module Puppet
 #
 # === Setup
 # Applications can use the setup block to perform any initialization.
-# The default +setup+ behaviour is to: read Puppet configuration and manage log level and destination
+# The default +setup+ behaviour is to: read Puppet configuration and manage log level and destination  #初始化
 #
 # === What and how to run
 # If the +dispatch+ block is defined it is called. This block should return the name of the registered command
@@ -95,6 +95,8 @@ module Puppet
 # If it doesn't exist, it defaults to execute the +main+ command if defined.
 #
 # === Execution state
+# 类属性和方法提供一个全局设置执行状态的，可以修改状态但是不会影响运行状态，
+# 假定在一个程序中，可能有多个组件会查询或者修改运行状态，
 # The class attributes/methods of Puppet::Application serve as a global place to set and query the execution
 # status of the application: stopping, restarting, etc.  The setting of the application status does not directly
 # affect its running status; it's assumed that the various components within the application will consult these
@@ -144,13 +146,13 @@ class Application
     def restart!
       self.run_status = :restart_requested
     end
-
+#返回真表明应用已经在重启，组件可以促进重启流程
     # Indicates that Puppet::Application.restart! has been invoked and components should
     # do what is necessary to facilitate a restart.
     def restart_requested?
       :restart_requested == run_status
     end
-
+#返回真表明应用已经在停止中，组件可以做一个干净的停止操作
     # Indicates that Puppet::Application.stop! has been invoked and components should do what is necessary
     # for a clean stop.
     def stop_requested?
@@ -168,7 +170,8 @@ class Application
     def clear?
       run_status.nil?
     end
-
+#run_status非空，则执行给的代码块，执行之后，检查运行状态，如果在执行期间状态变成重启，会给当前进程一个HUB的信号量，
+# 从而一个长期执行的后台进程才可能结束。
     # Only executes the given block if the run status of Puppet::Application is clear (no restarts, stops,
     # etc. requested).
     # Upon block execution, checks the run status again; if a restart has been requested during the block's
@@ -197,16 +200,17 @@ class Application
       Puppet.deprecation_warning("should_parse_config? " + SHOULD_PARSE_CONFIG_DEPRECATION_MSG)
       true
     end
-
+#声明option的代码
     # used to declare code that handle an option
     def option(*options, &block)
+      #查找opt中以--开头的，
       long = options.find { |opt| opt =~ /^--/ }.gsub(/^--(?:\[no-\])?([^ =]+).*$/, '\1' ).gsub('-','_')
-      fname = "handle_#{long}".intern
+      fname = "handle_#{long}".intern  #创建一个标签
       if (block_given?)
-        define_method(fname, &block)
+        define_method(fname, &block)   #给了代码块，就设置实例方法方法，与实例绑定。
       else
-        define_method(fname) do |value|
-          self.options["#{long}".to_sym] = value
+        define_method(fname) do |value|   #没给代码块就放在options数组里？
+          self.options["#{long}".to_sym] = value    没有
         end
       end
       self.option_parser_commands << [options, fname]

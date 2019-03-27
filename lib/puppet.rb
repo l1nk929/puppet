@@ -31,14 +31,14 @@ module Puppet
   require 'puppet/context'
   require 'puppet/environments'
 
-  class << self
+  class << self      #添加类方法，类属性，self指代Puppet模块？
     include Puppet::Util
     attr_reader :features
     attr_writer :name
   end
 
   # the hash that determines how our system behaves
-  @@settings = Puppet::Settings.new
+  @@settings = Puppet::Settings.new   #类变量
 
   # Note: It's important that these accessors (`self.settings`, `self.[]`) are
   # defined before we try to load any "features" (which happens a few lines below),
